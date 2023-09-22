@@ -1,76 +1,74 @@
 #include "shell.h"
 
 /**
- **_strncpy - copies a string
- *@dest: the destination string to be copied to
- *@src: the source string
- *@n: the amount of characters to be copied
- *Return: the concatenated string
+ **_strcpy_n - copy a string with certain bytes
+ * @destination: dest
+ * @source: source
+ *@num: amount of char
+ * Return: pointer
  */
-char *_strncpy(char *dest, char *src, int n)
+char *_strcpy_n(char *destination, char *source, int num)
 {
-	int i, j;
-	char *s = dest;
+	int x, y;
+	char *l = destination;
 
-	i = 0;
-	while (src[i] != '\0' && i < n - 1)
+	x = 0;
+	while (source[x] != '\0' && x < num - 1)
 	{
-		dest[i] = src[i];
-		i++;
+		destination[x] = source[x];
+		x++;
 	}
-	if (i < n)
+	if (x < num)
 	{
-		j = i;
-		while (j < n)
+		y = x;
+		while (y < num)
 		{
-			dest[j] = '\0';
-			j++;
+			destination[y] = '\0';
+			y++;
 		}
 	}
-	return (s);
+	return (l);
 }
 
 /**
- **_strncat - concatenates two strings
- *@dest: the first string
- *@src: the second string
- *@n: the amount of bytes to be maximally used
- *Return: the concatenated string
+ * _strcat_n - concatenated strings with certain bytes
+ * @destination: dest
+ * @source: source
+ *@num: the amount of bytes
+ *Return: pointer
  */
-char *_strncat(char *dest, char *src, int n)
+char *_strcat_n(char *destination, char *source, int num)
 {
 	int i, j;
-	char *s = dest;
+	char *s = destination;
 
 	i = 0;
 	j = 0;
-	while (dest[i] != '\0')
+	while (destination[i] != '\0')
 		i++;
-	while (src[j] != '\0' && j < n)
+	while (source[j] != '\0' && j < num)
 	{
-		dest[i] = src[j];
+		destination[i] = source[j];
 		i++;
 		j++;
 	}
-	if (j < n)
-		dest[i] = '\0';
+	if (j < num)
+		destination[i] = '\0';
 	return (s);
 }
 
 /**
- **_strchr - locates a character in a string
- *@s: the string to be parsed
- *@c: the character to look for
- *Return: (s) a pointer to the memory area s
+ **_searchar - search for a char in string
+ * @str: string
+ *@ch: char
+ *Return: pointer
  */
-char *_strchr(char *s, char c)
+char *_searchar(char *str, char ch)
 {
 	do {
-		if (*s == c)
-			return (s);
-	} while (*s++ != '\0');
+		if (*str == ch)
+			return (str);
+	} while (*str++ != '\0');
 
 	return (NULL);
 }
-
-
