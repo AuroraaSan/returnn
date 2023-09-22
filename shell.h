@@ -110,7 +110,7 @@ typedef struct builting
 
 
 
-/*         str_error.c functions prototypes          */
+/*str_error.c */
 void print_error(char *);
 int error_char(char);
 int write_to_fd(char c, int file_d);
@@ -133,28 +133,22 @@ char *get_path(PassInfo_t *, char *, char *);
 /* loophsh.c */
 int loophsh(char **);
 
-/* toem_errors.c */
-void _eputs(char *);
-int _eputchar(char);
-int _putfd(char c, int fd);
-int _putsfd(char *str, int fd);
-
-/* toem_string.c */
+/* string_handling_1.c */
 int _strlen(char *);
 int _strcmp(char *, char *);
 char *starts_w(const char *, const char *);
 char *_strcat(char *, char *);
 
-/* toem_string1.c */
+/* string_handling_2.c */
 char *_strcpy(char *, char *);
 char *_strdup(const char *);
 void _puts(char *);
 int _putchar(char);
 
-/* toem_exits.c */
-char *_strncpy(char *, char *, int);
-char *_strncat(char *, char *, int);
-char *_strchr(char *, char);
+/* string_handling_3.c */
+char *_strcpy_n(char *, char *, int);
+char *_strcat_n(char *, char *, int);
+char *_searchar(char *, char);
 
 /* string_handling_4.c */
 char **string_to_word(char *, char *);
@@ -186,14 +180,14 @@ int _xit(PassInfo_t *);
 int _cd(PassInfo_t *);
 int _help(PassInfo_t *);
 
-/* toem_builtin1.c */
-int _myhistory(PassInfo_t *);
-int _myalias(PassInfo_t *);
+/* sec_emulators.c */
+int history_display(PassInfo_t *);
+int mimic_alias(PassInfo_t *);
 
-/*toem_getline.c */
-ssize_t get_input(PassInfo_t *);
-int _getline(PassInfo_t *, char **, size_t *);
-void sigintHandler(int);
+/*input_handling.c */
+ssize_t record_user_input(PassInfo_t *);
+int input_line_get(PassInfo_t *, char **, size_t *);
+void handle_cmd_ctrl(int);
 
 /* information.c */
 void clear_shell_info(PassInfo_t *);
@@ -208,16 +202,16 @@ int unset_env_var(PassInfo_t *);
 int populate_env_lst(PassInfo_t *);
 
 /* envitoment2.c */
-char **copy_environ_to_string_array(PassInfo_t *); 
+char **copy_environ_to_string_array(PassInfo_t *);
 int delete_env_var(PassInfo_t *, char *);
 int set_env_variable(PassInfo_t *, char *, char *);
 
-/* toem_history.c */
-char *get_history_file(PassInfo_t *info);
-int write_history(PassInfo_t *info);
-int read_history(PassInfo_t *info);
-int build_history_list(PassInfo_t *info, char *buf, int linecount);
-int renumber_history(PassInfo_t *info);
+/* io_functions.c */
+char *get_history_filepath(PassInfo_t *info);
+int w_history(PassInfo_t *info);
+int r_history(PassInfo_t *info);
+int build_hlist(PassInfo_t *info, char *buf, int linecount);
+int renum_hist(PassInfo_t *info);
 
 /* list_handling.c */
 lst_t *node_addition_start(lst_t **, const char *, int);
@@ -234,11 +228,11 @@ size_t print_lst(const lst_t *);
 lst_t *nd_starts_w(lst_t *, char *, char);
 ssize_t get_index_of_node(lst_t *, lst_t *);
 
-/* toem_vars.c */
-int is_chain(PassInfo_t *, char *, size_t *);
-void check_chain(PassInfo_t *, char *, size_t *, size_t, size_t);
-int replace_alias(PassInfo_t *);
-int replace_vars(PassInfo_t *);
-int replace_string(char **, char *);
+/* myChain.c */
+int isChain(PassInfo_t *, char *, size_t *);
+void check_chain_conditions(PassInfo_t *, char *, size_t *, size_t, size_t);
+int replace_aliases(PassInfo_t *);
+int replace_variables(PassInfo_t *);
+int string_replace(char **, char *);
 
 #endif
