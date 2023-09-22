@@ -1,21 +1,21 @@
 #include "shell.h"
 
 /**
- * is_cmd - determines if a file is an executable command
- * @info: the info struct
+ * check_ex_commad - determines if a file is an executable command
+ * @information: the info struct
  * @path: path to the file
  *
- * Return: 1 if true, 0 otherwise
+ * Return: 1 or 0 otherwise
  */
-int is_cmd(info_t *info, char *path)
+int check_ex_commad(PassInfo_t *information, char *path)
 {
-	struct stat st;
+	struct stat stt;
 
-	(void)info;
-	if (!path || stat(path, &st))
+	(void)information;
+	if (!path || stat(path, &stt))
 		return (0);
 
-	if (st.st_mode & S_IFREG)
+	if (stt.st_mode & S_IFREG)
 	{
 		return (1);
 	}
@@ -23,62 +23,62 @@ int is_cmd(info_t *info, char *path)
 }
 
 /**
- * dup_chars - duplicates characters
- * @pathstr: the PATH string
- * @start: starting index
- * @stop: stopping index
+ * characters_duplicate - duplicates characters
+ * @pathstrr: the PATH string
+ * @first: starting index
+ * @end: stopping index
  *
  * Return: pointer to new buffer
  */
-char *dup_chars(char *pathstr, int start, int stop)
+char *characters_duplicate(char *pathstrr, int first, int end)
 {
-	static char buf[1024];
-	int i = 0, k = 0;
+	static char bufferr[1024];
+	int x = 0, m = 0;
 
-	for (k = 0, i = start; i < stop; i++)
-		if (pathstr[i] != ':')
-			buf[k++] = pathstr[i];
-	buf[k] = 0;
-	return (buf);
+	for (m = 0, x = first; x < end; x++)
+		if (pathstrr[x] != ':')
+			bufferr[m++] = pathstrr[x];
+	bufferr[m] = 0;
+	return (bufferr);
 }
 
 /**
- * find_path - finds this cmd in the PATH string
- * @info: the info struct
- * @pathstr: the PATH string
- * @cmd: the cmd to find
+ * get_path - finds this cmd in the PATH string
+ * @information: the info struct
+ * @pathstrr: the PATH string
+ * @cmdd: the cmd to find
  *
  * Return: full path of cmd if found or NULL
  */
-char *find_path(info_t *info, char *pathstr, char *cmd)
+char *get_path(PassInfo_t *information, char *pathstrr, char *cmdd)
 {
-	int i = 0, curr_pos = 0;
+	int i = 0, current_p = 0;
 	char *path;
 
-	if (!pathstr)
+	if (!pathstrr)
 		return (NULL);
-	if ((_strlen(cmd) > 2) && starts_with(cmd, "./"))
+	if ((_strlen(cmdd) > 2) && starts_w(cmdd, "./"))
 	{
-		if (is_cmd(info, cmd))
-			return (cmd);
+		if (check_ex_commad(information, cmdd))
+			return (cmdd);
 	}
 	while (1)
 	{
-		if (!pathstr[i] || pathstr[i] == ':')
+		if (!pathstrr[i] || pathstrr[i] == ':')
 		{
-			path = dup_chars(pathstr, curr_pos, i);
+			path = characters_duplicate(pathstrr, current_p, i);
 			if (!*path)
-				_strcat(path, cmd);
+				_strcat(path, cmdd);
 			else
 			{
 				_strcat(path, "/");
-				_strcat(path, cmd);
+				_strcat(path, cmdd);
 			}
-			if (is_cmd(info, path))
+			if (check_ex_commad(information, path))
 				return (path);
-			if (!pathstr[i])
+			if (!pathstrr[i])
 				break;
-			curr_pos = i;
+			current_p = i;
 		}
 		i++;
 	}
