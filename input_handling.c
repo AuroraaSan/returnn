@@ -1,172 +1,168 @@
 #include "shell.h"
+#include <signal.h>
 
 /**
- * input_buf - buffers chained commands
- * @info: parameter struct
- * @buf: address of buffer
+ * input_buf - buffers commands
+ * @information: parameter struct
+ * @buff: address of buffer
  * @len: address of len var
  *
  * Return: bytes read
  */
-ssize_t input_buf(info_t *info, char **buf, size_t *len)
+ssize_t input_buf(PassInfo_t *information, char **buff, size_t *len)
 {
-	ssize_t r = 0;
-	size_t len_p = 0;
+	ssize_t x = 0;
+	size_t ptr_len = 0;
 
-	if (!*len) /* if nothing left in the buffer, fill it */
+	if (!*len)
 	{
-		/*bfree((void **)info->cmd_buf);*/
-		free(*buf);
-		*buf = NULL;
-		signal(SIGINT, sigintHandler);
+		free(*buff);
+		*buff = NULL;
+		signal(SIGINT, handle_cmd_ctrl);
 #if USE_GETLINE
-		r = getline(buf, &len_p, stdin);
+		x = getline(buff, &ptr_len, stdin);
 #else
-		r = _getline(info, buf, &len_p);
+		x = input_line_get(information, buff, &ptr_len);
 #endif
-		if (r > 0)
+		if (x > 0)
 		{
-			if ((*buf)[r - 1] == '\n')
+			if ((*buff)[x - 1] == '\n')
 			{
-				(*buf)[r - 1] = '\0'; /* remove trailing newline */
-				r--;
+				(*buff)[x - 1] = '\0';
+				x--;
 			}
-			info->linecount_flag = 1;
-			remove_comments(*buf);
-			build_history_list(info, *buf, info->histcount++);
-			/* if (_strchr(*buf, ';')) is this a command chain? */
+			information->count_this_line = 1;
+			comments_handling(*buff);
+			build_hlist(information, *buff, information->history_line_count++);
 			{
-				*len = r;
-				info->cmd_buf = buf;
+				*len = x;
+				information->cmd_buffer = buff;
 			}
 		}
 	}
-	return (r);
+	return (x);
 }
 
 /**
  * get_input - gets a line minus the newline
- * @info: parameter struct
+ * @information: parameter struct
  *
  * Return: bytes read
  */
-ssize_t get_input(info_t *info)
+ssize_t get_input(PassInfo_t *information)
 {
-	static char *buf; /* the ';' command chain buffer */
-	static size_t i, j, len;
-	ssize_t r = 0;
-	char **buf_p = &(info->arg), *p;
+	static char *buff;
+	static size_t x, y, lenn;
+	ssize_t z = 0;
+	char **buf_pos = &(information->argument), *ptr;
 
 	_putchar(BUF_FLUSH);
-	r = input_buf(info, &buf, &len);
-	if (r == -1) /* EOF */
+	z = input_buf(information, &buff, &lenn);
+	if (z == -1)
 		return (-1);
-	if (len) /* we have commands left in the chain buffer */
+	if (lenn)
 	{
-		j = i; /* init new iterator to current buf position */
-		p = buf + i; /* get pointer for return */
+		y = x;
+		ptr = buff + x;
 
-		check_chain(info, buf, &j, i, len);
-		while (j < len) /* iterate to semicolon or end */
+		check_chain_conditions(information, buff, &y, x, lenn);
+		while (y < lenn)
 		{
-			if (is_chain(info, buf, &j))
+			if (isChain(information, buff, &y))
 				break;
-			j++;
+			y++;
 		}
 
-		i = j + 1; /* increment past nulled ';'' */
-		if (i >= len) /* reached end of buffer? */
+		x = y + 1;
+		if (x >= lenn)
 		{
-			i = len = 0; /* reset position and length */
-			info->cmd_buf_type = CMD_NORM;
+			x = lenn = 0;
+			information->cmd_buffer_type = CMD_NORM;
 		}
 
-		*buf_p = p; /* pass back pointer to current command position */
-		return (_strlen(p)); /* return length of current command */
+		*buf_pos = ptr;
+		return (_strlen(ptr));
 	}
 
-	*buf_p = buf; /* else not a chain, pass back buffer from _getline() */
-	return (r); /* return length of buffer from _getline() */
+	*buf_pos = buff;
+	return (z);
 }
 
 /**
  * read_buf - reads a buffer
- * @info: parameter struct
- * @buf: buffer
- * @i: size
- *
- * Return: r
+ * @information: parameter struct
+ * @buffer: buffer
+ * @x: size
+ * Return: y
  */
-ssize_t read_buf(info_t *info, char *buf, size_t *i)
+ssize_t read_buf(PassInfo_t *information, char *buffer, size_t *x)
 {
-	ssize_t r = 0;
+	ssize_t y = 0;
 
-	if (*i)
+	if (*x)
 		return (0);
-	r = read(info->readfd, buf, READ_BUF_SIZE);
-	if (r >= 0)
-		*i = r;
-	return (r);
+	x = read(information->read_file_descriptor, buffer, READ_BUF_SIZE);
+	if (y >= 0)
+		*x = y;
+	return (y);
 }
 
 /**
  * _getline - gets the next line of input from STDIN
- * @info: parameter struct
- * @ptr: address of pointer to buffer, preallocated or NULL
- * @length: size of preallocated ptr buffer if not NULL
+ * @information: parameter struct
+ * @p: address of pointer to buf
+ * @len: size ptr
  *
  * Return: s
  */
-int _getline(info_t *info, char **ptr, size_t *length)
+int _getline(PassInfo_t *information, char **p, size_t *len)
 {
-	static char buf[READ_BUF_SIZE];
-	static size_t i, len;
-	size_t k;
-	ssize_t r = 0, s = 0;
-	char *p = NULL, *new_p = NULL, *c;
+	static char buffer[READ_BUF_SIZE];
+	static size_t x, lenn;
+	size_t y;
+	ssize_t r = 0, q = 0;
+	char *ptr = NULL, *neww = NULL, *ch;
 
-	p = *ptr;
-	if (p && length)
-		s = *length;
-	if (i == len)
-		i = len = 0;
+	ptr = *p;
+	if (ptr && len)
+		q = *len;
+	if (x == lenn)
+		x = lenn = 0;
 
-	r = read_buf(info, buf, &len);
-	if (r == -1 || (r == 0 && len == 0))
+	r = read_buf(information, buffer, &lenn);
+	if (r == -1 || (r == 0 && lenn == 0))
 		return (-1);
 
-	c = _strchr(buf + i, '\n');
-	k = c ? 1 + (unsigned int)(c - buf) : len;
-	new_p = _realloc(p, s, s ? s + k : k + 1);
-	if (!new_p) /* MALLOC FAILURE! */
-		return (p ? free(p), -1 : -1);
+	ch = _searchar(buffer + x, '\n');
+	y = ch ? 1 + (unsigned int)(ch - buffer) : lenn;
+	neww = _memory_reallocate(ptr, q, q ? q + y : y + 1);
+	if (!neww)
+		return (ptr ? free(ptr), -1 : -1);
 
-	if (s)
-		_strncat(new_p, buf + i, k - i);
+	if (q)
+		_strcat_n(neww, buffer + x, y - x);
 	else
-		_strncpy(new_p, buf + i, k - i + 1);
+		_strcpy_n(neww, buffer + x, y - x + 1);
 
-	s += k - i;
-	i = k;
-	p = new_p;
+	q += y - x;
+	x = y;
+	ptr = neww;
 
-	if (length)
-		*length = s;
-	*ptr = p;
-	return (s);
+	if (len)
+		*len = q;
+	*p = ptr;
+	return (q);
 }
 
 /**
- * sigintHandler - blocks ctrl-C
- * @sig_num: the signal number
+ * handle_cmd_ctrl - handles commands
+ * @signal_n: the signal number
  *
  * Return: void
  */
-void sigintHandler(__attribute__((unused))int sig_num)
+void handle_cmd_ctrl(__attribute__((unused))int signal_n)
 {
 	_puts("\n");
 	_puts("$ ");
 	_putchar(BUF_FLUSH);
 }
-
-
