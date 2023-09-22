@@ -14,19 +14,11 @@ char **string_to_word(char *s, char *delm)
 
 	if (s == NULL || s[0] == 0)
 		return (NULL);
-<<<<<<< Updated upstream
-	if (!d)
-		d = " ";
-	for (i = 0; str[i] != '\0'; i++)
-		if (!is_char_delim(str[i], d) && (is_char_delim(str[i + 1], d) || !str[i + 1]))
-			numwords++;
-=======
 	if (!delm)
 		delm = " ";
 	for (i = 0; s[i] != '\0'; i++)
 		if (!is_char_delim(s[i], delm) && (is_char_delim(s[i + 1], delm) || !s[i + 1]))
 			num++;
->>>>>>> Stashed changes
 
 	if (num == 0)
 		return (NULL);

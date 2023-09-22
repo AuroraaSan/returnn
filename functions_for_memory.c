@@ -12,7 +12,7 @@ char *_set_memory(char *mem, char b, unsigned int num)
 	unsigned int j;
 
 	for (j = 0; j < num; j++)
-		mem[i] = b;
+		mem[j] = b;
 	return (mem);
 }
 
@@ -39,7 +39,7 @@ void free_string(char **p)
  *
  * Return: pointer to da ol'block nameen.
  */
-void **_memory_reallocate(void *ptr, unsigned int oldy, unsigned int neww)
+void *_memory_reallocate(void *ptr, unsigned int oldy, unsigned int neww)
 {
 	char *p;
 

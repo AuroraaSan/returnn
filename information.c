@@ -38,8 +38,8 @@ void set_shell_info(PassInfo_t *information, char **a_val)
 			;
 		information->a_counter = i;
 
-		replace_alias(information);
-		replace_vars(information);
+		replace_aliases(information);
+		replace_variables(information);
 	}
 }
 
@@ -50,7 +50,7 @@ void set_shell_info(PassInfo_t *information, char **a_val)
  */
 void free_shell_info(PassInfo_t *information, int all_f)
 {
-	ffree(information->a_value);
+	free_string(information->a_value);
 	information->a_value = NULL;
 	information->path = NULL;
 	if (all_f)
@@ -58,14 +58,14 @@ void free_shell_info(PassInfo_t *information, int all_f)
 		if (!information->cmd_buffer)
 			free(information->argument);
 		if (information->environment_list)
-			free_list(&(information->environment_list));
+			free_lst(&(information->environment_list));
 		if (information->hist)
-			free_list(&(information->hist));
+			free_lst(&(information->hist));
 		if (information->alias_node)
-			free_list(&(information->alias_node));
-		ffree(information->environ);
+			free_lst(&(information->alias_node));
+		free_string(information->environ);
 			information->environ = NULL;
-		bfree((void **)information->cmd_buffer);
+		free_pointer((void **)information->cmd_buffer);
 		if (information->read_file_descriptor > 2)
 			close(information->read_file_descriptor);
 		_putchar(BUF_FLUSH);

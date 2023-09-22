@@ -101,7 +101,7 @@ ssize_t read_buf(PassInfo_t *information, char *buffer, size_t *x)
 
 	if (*x)
 		return (0);
-	x = read(information->read_file_descriptor, buffer, READ_BUF_SIZE);
+	y = read(information->read_file_descriptor, buffer, READ_BUF_SIZE);
 	if (y >= 0)
 		*x = y;
 	return (y);

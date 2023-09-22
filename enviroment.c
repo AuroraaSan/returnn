@@ -7,7 +7,7 @@
  */
 int print_env(PassInfo_t *information)
 {
-	print_list_str(information->environment_list);
+	print_lst_str(information->environment_list);
 	return (0);
 }
 
@@ -83,7 +83,7 @@ int populate_env_lst(PassInfo_t *information)
 	size_t x;
 
 	for (x = 0; environ[x]; x++)
-		add_node_end(&nod, environ[x], 0);
+		add_nodeto_end(&nod, environ[x], 0);
 	information->environment_list = nod;
 	return (0);
 }
