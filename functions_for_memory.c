@@ -1,64 +1,62 @@
 #include "shell.h"
 
 /**
- * _memset - fills memory with a constant byte
- * @s: the pointer to the memory area
+ * _set_memory - fills memory with a constant byte
+ * @mem: the pointer to the memory area
  * @b: the byte to fill *s with
- * @n: the amount of bytes to be filled
+ * @num: the amount of bytes to be filled
  * Return: (s) a pointer to the memory area s
  */
-char *_memset(char *s, char b, unsigned int n)
+char *_set_memory(char *mem, char b, unsigned int num)
 {
-	unsigned int i;
+	unsigned int j;
 
-	for (i = 0; i < n; i++)
-		s[i] = b;
-	return (s);
+	for (j = 0; j < num; j++)
+		mem[i] = b;
+	return (mem);
 }
 
 /**
- * ffree - frees a string of strings
- * @pp: string of strings
+ * free_string - frees a string of strings
+ * @p: string 
  */
-void ffree(char **pp)
+void free_string(char **p)
 {
-	char **a = pp;
+	char **b = p;
 
-	if (!pp)
+	if (!p)
 		return;
-	while (*pp)
-		free(*pp++);
-	free(a);
+	while (*p)
+		free(*p++);
+	free(b);
 }
 
 /**
- * _realloc - reallocates a block of memory
- * @ptr: pointer to previous malloc'ated block
- * @old_size: byte size of previous block
- * @new_size: byte size of new block
+ * *_memory_reallocate - reallocates  memory
+ * @ptr: previous malloc'ated block pointer
+ * @oldy: size of byte previous block
+ * @neww: size of byte new block
  *
  * Return: pointer to da ol'block nameen.
  */
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
+void **_memory_reallocate(void *ptr, unsigned int oldy, unsigned int neww)
 {
 	char *p;
 
 	if (!ptr)
-		return (malloc(new_size));
-	if (!new_size)
+		return (malloc(neww));
+	if (!neww)
 		return (free(ptr), NULL);
-	if (new_size == old_size)
+	if (neww == oldy)
 		return (ptr);
 
-	p = malloc(new_size);
+	p = malloc(neww);
 	if (!p)
 		return (NULL);
 
-	old_size = old_size < new_size ? old_size : new_size;
-	while (old_size--)
-		p[old_size] = ((char *)ptr)[old_size];
+	oldy = oldy < neww ? oldy : neww;
+	while (oldy--)
+		p[oldy] = ((char *)ptr)[oldy];
 	free(ptr);
 	return (p);
 }
-
-

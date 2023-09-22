@@ -87,7 +87,7 @@ typedef struct PassInfo
 	lst_t *alias_node;
 	int environment_changed;
 	int return_status;
-	char ***cmd_buffer;   /* it is a pointer*/
+	char **cmd_buffer;   /* it is a pointer*/
 	int cmd_buffer_type; /*type of cmd*/
 	int read_file_descriptor;
 	int history_line_count;
@@ -140,7 +140,7 @@ int _putsfd(char *str, int fd);
 /* toem_string.c */
 int _strlen(char *);
 int _strcmp(char *, char *);
-char *starts_with(const char *, const char *);
+char *starts_w(const char *, const char *);
 char *_strcat(char *, char *);
 
 /* toem_string1.c */
@@ -158,13 +158,13 @@ char *_strchr(char *, char);
 char **strtow(char *, char *);
 char **strtow2(char *, char);
 
-/* toem_realloc.c */
-char *_memset(char *, char, unsigned int);
-void ffree(char **);
-void *_realloc(void *, unsigned int, unsigned int);
+/* functions_for_memory.c */
+char *_set_memory(char *, char, unsigned int);
+void free_string(char **);
+void *_memory_reallocate(void *, unsigned int, unsigned int);
 
-/* toem_memory.c */
-int bfree(void **);
+/* functions_for_memory_2.c */
+int free_pointer(void **);
 
 /* toem_atoi.c */
 int interactive(PassInfo_t *);
@@ -173,16 +173,16 @@ int _isalpha(int);
 int _atoi(char *);
 
 /* toem_errors1.c */
-int _erratoi(char *);
-void print_error(PassInfo_t *, char *);
-int print_d(int, int);
-char *convert_number(long int, int, int);
-void remove_comments(char *);
+int _str_to_int_witherror(char *);
+void error_handling(PassInfo_t *, char *);
+int decimal_print(int, int);
+char *number_to_str(long int, int, int);
+void comments_handling(char *);
 
-/* toem_builtin.c */
-int _myexit(PassInfo_t *);
-int _mycd(PassInfo_t *);
-int _myhelp(PassInfo_t *);
+/*  emulators1.c */
+int _xit(PassInfo_t *);
+int _cd(PassInfo_t *);
+int _help(PassInfo_t *);
 
 /* toem_builtin1.c */
 int _myhistory(PassInfo_t *);
@@ -206,7 +206,7 @@ int _myunsetenv(PassInfo_t *);
 int populate_env_list(PassInfo_t *);
 
 /* toem_getenv.c */
-char **get_environ(PassInfo_t *);
+char **get_env_value(PassInfo_t *);
 int _unsetenv(PassInfo_t *, char *);
 int _setenv(PassInfo_t *, char *, char *);
 
@@ -239,6 +239,3 @@ int replace_vars(PassInfo_t *);
 int replace_string(char **, char *);
 
 #endif
-
-
-
