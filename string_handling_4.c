@@ -1,97 +1,103 @@
 #include "shell.h"
 
 /**
- * **strtow - splits a string into words. Repeat delimiters are ignored
- * @str: the input string
- * @d: the delimeter string
+ * **string_to_word - splits a string into words. Repeat delimiters are ignored
+ * @s: the input string
+ * @delm: the delimeter string
  * Return: a pointer to an array of strings, or NULL on failure
  */
 
-char **strtow(char *str, char *d)
+char **string_to_word(char *s, char *delm)
 {
-	int i, j, k, m, numwords = 0;
-	char **s;
+	int i, j, k, m, num = 0;
+	char **sr;
 
-	if (str == NULL || str[0] == 0)
+	if (s == NULL || s[0] == 0)
 		return (NULL);
+<<<<<<< Updated upstream
 	if (!d)
 		d = " ";
 	for (i = 0; str[i] != '\0'; i++)
 		if (!is_char_delim(str[i], d) && (is_char_delim(str[i + 1], d) || !str[i + 1]))
 			numwords++;
+=======
+	if (!delm)
+		delm = " ";
+	for (i = 0; s[i] != '\0'; i++)
+		if (!is_char_delim(s[i], delm) && (is_char_delim(s[i + 1], delm) || !s[i + 1]))
+			num++;
+>>>>>>> Stashed changes
 
-	if (numwords == 0)
+	if (num == 0)
 		return (NULL);
-	s = malloc((1 + numwords) * sizeof(char *));
-	if (!s)
+	sr = malloc((1 + num) * sizeof(char *));
+	if (!sr)
 		return (NULL);
-	for (i = 0, j = 0; j < numwords; j++)
+	for (i = 0, j = 0; j < num; j++)
 	{
-		while (is_delim(str[i], d))
+		while (is_char_delim(s[i], delm))
 			i++;
 		k = 0;
-		while (!is_delim(str[i + k], d) && str[i + k])
+		while (!is_char_delim(s[i + k], delm) && s[i + k])
 			k++;
-		s[j] = malloc((k + 1) * sizeof(char));
-		if (!s[j])
+		sr[j] = malloc((k + 1) * sizeof(char));
+		if (!sr[j])
 		{
 			for (k = 0; k < j; k++)
-				free(s[k]);
-			free(s);
+				free(sr[k]);
+			free(sr);
 			return (NULL);
 		}
 		for (m = 0; m < k; m++)
-			s[j][m] = str[i++];
-		s[j][m] = 0;
+			sr[j][m] = s[i++];
+		sr[j][m] = 0;
 	}
-	s[j] = NULL;
-	return (s);
+	sr[j] = NULL;
+	return (sr);
 }
 
 /**
- * **strtow2 - splits a string into words
- * @str: the input string
- * @d: the delimeter
+ * string_to_word_ecounter - splits a string into words
+ * @s: the input string
+ * @delm: the delimeter
  * Return: a pointer to an array of strings, or NULL on failure
  */
-char **strtow2(char *str, char d)
+char **string_to_word_ecounter(char *s, char delm)
 {
-	int i, j, k, m, numwords = 0;
-	char **s;
+	int i, j, k, m, num = 0;
+	char **sr;
 
-	if (str == NULL || str[0] == 0)
+	if (s == NULL || s[0] == 0)
 		return (NULL);
-	for (i = 0; str[i] != '\0'; i++)
-		if ((str[i] != d && str[i + 1] == d) ||
-				    (str[i] != d && !str[i + 1]) || str[i + 1] == d)
-			numwords++;
-	if (numwords == 0)
+	for (i = 0; s[i] != '\0'; i++)
+		if ((s[i] != delm && s[i + 1] == delm) ||
+				    (s[i] != delm && !s[i + 1]) || s[i + 1] == delm)
+			num++;
+	if (num == 0)
 		return (NULL);
-	s = malloc((1 + numwords) * sizeof(char *));
-	if (!s)
+	sr = malloc((1 + num) * sizeof(char *));
+	if (!sr)
 		return (NULL);
-	for (i = 0, j = 0; j < numwords; j++)
+	for (i = 0, j = 0; j < num; j++)
 	{
-		while (str[i] == d && str[i] != d)
+		while (s[i] == delm && s[i] != delm)
 			i++;
 		k = 0;
-		while (str[i + k] != d && str[i + k] && str[i + k] != d)
+		while (s[i + k] != delm && s[i + k] && s[i + k] != delm)
 			k++;
-		s[j] = malloc((k + 1) * sizeof(char));
-		if (!s[j])
+		sr[j] = malloc((k + 1) * sizeof(char));
+		if (!sr[j])
 		{
 			for (k = 0; k < j; k++)
-				free(s[k]);
-			free(s);
+				free(sr[k]);
+			free(sr);
 			return (NULL);
 		}
 		for (m = 0; m < k; m++)
-			s[j][m] = str[i++];
-		s[j][m] = 0;
+			sr[j][m] = s[i++];
+		sr[j][m] = 0;
 	}
-	s[j] = NULL;
-	return (s);
+	sr[j] = NULL;
+	return (sr);
 }
-
-
 
