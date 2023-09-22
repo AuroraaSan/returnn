@@ -1,99 +1,172 @@
 #include "shell.h"
 
 /**
- * lookforslash - identifies if first char is a slash.
- * @cmd: first string
- * Return: 1 if yes 0 if no.
+ * input_buf - buffers chained commands
+ * @info: parameter struct
+ * @buf: address of buffer
+ * @len: address of len var
+ *
+ * Return: bytes read
  */
-int lookforslash(char *cmd)
+ssize_t input_buf(info_t *info, char **buf, size_t *len)
 {
-	int cont = 0;
+	ssize_t r = 0;
+	size_t len_p = 0;
 
-	while (cmd[cont])
+	if (!*len) /* if nothing left in the buffer, fill it */
 	{
-		if (cmd[0] == '/')
+		/*bfree((void **)info->cmd_buf);*/
+		free(*buf);
+		*buf = NULL;
+		signal(SIGINT, sigintHandler);
+#if USE_GETLINE
+		r = getline(buf, &len_p, stdin);
+#else
+		r = _getline(info, buf, &len_p);
+#endif
+		if (r > 0)
 		{
-			printf("%c\n", cmd[0]);
-			return (1);
+			if ((*buf)[r - 1] == '\n')
+			{
+				(*buf)[r - 1] = '\0'; /* remove trailing newline */
+				r--;
+			}
+			info->linecount_flag = 1;
+			remove_comments(*buf);
+			build_history_list(info, *buf, info->histcount++);
+			/* if (_strchr(*buf, ';')) is this a command chain? */
+			{
+				*len = r;
+				info->cmd_buf = buf;
+			}
+		}
+	}
+	return (r);
+}
+
+/**
+ * get_input - gets a line minus the newline
+ * @info: parameter struct
+ *
+ * Return: bytes read
+ */
+ssize_t get_input(info_t *info)
+{
+	static char *buf; /* the ';' command chain buffer */
+	static size_t i, j, len;
+	ssize_t r = 0;
+	char **buf_p = &(info->arg), *p;
+
+	_putchar(BUF_FLUSH);
+	r = input_buf(info, &buf, &len);
+	if (r == -1) /* EOF */
+		return (-1);
+	if (len) /* we have commands left in the chain buffer */
+	{
+		j = i; /* init new iterator to current buf position */
+		p = buf + i; /* get pointer for return */
+
+		check_chain(info, buf, &j, i, len);
+		while (j < len) /* iterate to semicolon or end */
+		{
+			if (is_chain(info, buf, &j))
+				break;
+			j++;
 		}
 
-		cont++;
+		i = j + 1; /* increment past nulled ';'' */
+		if (i >= len) /* reached end of buffer? */
+		{
+			i = len = 0; /* reset position and length */
+			info->cmd_buf_type = CMD_NORM;
+		}
+
+		*buf_p = p; /* pass back pointer to current command position */
+		return (_strlen(p)); /* return length of current command */
 	}
-	return (0);
+
+	*buf_p = buf; /* else not a chain, pass back buffer from _getline() */
+	return (r); /* return length of buffer from _getline() */
 }
 
 /**
- * compareExit - identifies if first char is a slash.
- * @s1: first string
- * @s2: exit string
- * Return: 1 if yes 0 if no.
+ * read_buf - reads a buffer
+ * @info: parameter struct
+ * @buf: buffer
+ * @i: size
+ *
+ * Return: r
  */
-int compareExit(char *s1, char *s2)
+ssize_t read_buf(info_t *info, char *buf, size_t *i)
 {
-	int i = 0;
+	ssize_t r = 0;
 
-	for (; (*s2 != '\0' && *s1 != '\0') && *s1 == *s2; s1++)
-	{
-		if (i == 3)
-			break;
-		i++;
-		s2++;
-	}
-
-	return (*s1 - *s2);
+	if (*i)
+		return (0);
+	r = read(info->readfd, buf, READ_BUF_SIZE);
+	if (r >= 0)
+		*i = r;
+	return (r);
 }
 
 /**
- * compareEnv - identifies if first char is a slash.
- * @s1: first string
- * @s2: exit string
- * Return: 1 if yes 0 if no.
+ * _getline - gets the next line of input from STDIN
+ * @info: parameter struct
+ * @ptr: address of pointer to buffer, preallocated or NULL
+ * @length: size of preallocated ptr buffer if not NULL
+ *
+ * Return: s
  */
-int compareEnv(char *s1, char *s2)
+int _getline(info_t *info, char **ptr, size_t *length)
 {
-	int i = 0;
+	static char buf[READ_BUF_SIZE];
+	static size_t i, len;
+	size_t k;
+	ssize_t r = 0, s = 0;
+	char *p = NULL, *new_p = NULL, *c;
 
-	for (; (*s2 != '\0' && *s1 != '\0') && *s1 == *s2; s1++)
-	{
-		if (i == 2)
-			break;
-		i++;
-		s2++;
-	}
+	p = *ptr;
+	if (p && length)
+		s = *length;
+	if (i == len)
+		i = len = 0;
 
-	return (*s1 - *s2);
+	r = read_buf(info, buf, &len);
+	if (r == -1 || (r == 0 && len == 0))
+		return (-1);
+
+	c = _strchr(buf + i, '\n');
+	k = c ? 1 + (unsigned int)(c - buf) : len;
+	new_p = _realloc(p, s, s ? s + k : k + 1);
+	if (!new_p) /* MALLOC FAILURE! */
+		return (p ? free(p), -1 : -1);
+
+	if (s)
+		_strncat(new_p, buf + i, k - i);
+	else
+		_strncpy(new_p, buf + i, k - i + 1);
+
+	s += k - i;
+	i = k;
+	p = new_p;
+
+	if (length)
+		*length = s;
+	*ptr = p;
+	return (s);
 }
+
 /**
- * identify_string - identyfy keyboard input.
- * @parameter: call prompt from another function (prompt)
- * Return: str
- **/
-char **identify_string(char *parameter)
+ * sigintHandler - blocks ctrl-C
+ * @sig_num: the signal number
+ *
+ * Return: void
+ */
+void sigintHandler(__attribute__((unused))int sig_num)
 {
-	char **buf = malloc(1024 * sizeof(char *));
-	char *split;
-	int i = 0;
-	char *delim = " \t\n";
-
-
-	split = strtok(parameter, delim);
-
-	while (split != NULL)
-	{
-		buf[i] = split;
-		i++;
-		split = strtok(NULL, delim);
-	}
-	execute_proc(buf);
-	return (buf);
-
+	_puts("\n");
+	_puts("$ ");
+	_putchar(BUF_FLUSH);
 }
-/**
- * controlC - avoid close the shell
- * @sig: keep going shell
- **/
-void  controlC(int sig)
-{
-	(void) sig;
-	write(1, "\n$ ", 3);
-}
+
+
