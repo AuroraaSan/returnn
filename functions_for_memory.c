@@ -18,7 +18,7 @@ char *_set_memory(char *mem, char b, unsigned int num)
 
 /**
  * free_string - frees a string of strings
- * @p: string 
+ * @p: string
  */
 void free_string(char **p)
 {

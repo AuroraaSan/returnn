@@ -19,8 +19,8 @@ int _strlen(char *s)
 
 /**
  * _strcmp - it compares two strings
- * @s1: string number 1
- * @s2: string number 2
+ * @str1: string number 1
+ * @str2: string number 2
  * Return: negative or positive or zero
  */
 int _strcmp(char *str1, char *str2)
@@ -41,7 +41,7 @@ int _strcmp(char *str1, char *str2)
 /**
  * starts_w - checks if needle starts with haystack
  * @hay: string we want to search for
- * @ndl: substring we want to find 
+ * @ndl: substring we want to find
  * Return: address of next char of haystack or NULL
  */
 char *starts_w(const char *hay, const char *ndl)

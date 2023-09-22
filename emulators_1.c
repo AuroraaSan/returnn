@@ -9,7 +9,7 @@ int _xit(PassInfo_t *information)
 {
 	int checkexit;
 
-	if (information->a_value[1]) 
+	if (information->a_value[1])
 	{
 		checkexit = _str_to_int_witherror(information->a_value[1]);
 		if (checkexit == -1)
@@ -44,7 +44,7 @@ int _cd(PassInfo_t *information)
 	{
 		direction = get_env_value(information, "HOME=");
 		if (!direction)
-			ret_Chdir = 
+			ret_Chdir =
 				chdir((direction = get_env_value(information, "PWD=")) ? direction : "/");
 		else
 			ret_Chdir = chdir(direction);
@@ -58,8 +58,8 @@ int _cd(PassInfo_t *information)
 			return (1);
 		}
 		_puts(get_env_value(information, "OLDPWD=")), _putchar('\n');
-		ret_Chdir = 
-			chdir((direction = get_env_value(information, "OLDPWD=")) ? direction : "/");
+		ret_Chdir = chdir((direction = get_env_value(information,
+							"OLDPWD=")) ? direction : "/");
 	}
 	else
 		ret_Chdir = chdir(information->a_value[1]);
@@ -77,7 +77,7 @@ int _cd(PassInfo_t *information)
 }
 
 /**
- * _help - changes the current directory 
+ * _help - changes the current directory
  * @information: Used to maintain the constant function.
  * Return:  0
  */
@@ -88,6 +88,6 @@ int _help(PassInfo_t *information)
 	a_array = information->a_value;
 	_puts("help call works. Function not yet implemented \n");
 	if (0)
-		_puts(*a_array); 
+		_puts(*a_array);
 	return (0);
 }
