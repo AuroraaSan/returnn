@@ -1,75 +1,74 @@
 #include "shell.h"
 
 /**
- * clear_info - initializes info_t struct
- * @info: struct address
+ * clear_shell_info - initializes info_t struct
+ * @information: struct address
  */
-void clear_info(info_t *info)
+void clear_shell_info(PassInfo_t *information)
 {
-	info->arg = NULL;
-	info->argv = NULL;
-	info->path = NULL;
-	info->argc = 0;
+	information->argument = NULL;
+	information->a_value = NULL;
+	information->path = NULL;
+	information->a_counter = 0;
 }
 
 /**
- * set_info - initializes info_t struct
- * @info: struct address
- * @av: argument vector
+ * set_shell_info - initializes info_t struct
+ * @information: struct address
+ * @a_val: argument vector
  */
-void set_info(info_t *info, char **av)
+void set_shell_info(PassInfo_t *information, char **a_val)
 {
 	int i = 0;
 
-	info->fname = av[0];
-	if (info->arg)
+	information->file_name = a_val[0];
+	if (information->argument)
 	{
-		info->argv = strtow(info->arg, " \t");
-		if (!info->argv)
+		information->a_value = string_to_word(information->argument, " \t");
+		if (!information->a_value)
 		{
-			info->argv = malloc(sizeof(char *) * 2);
-			if (info->argv)
+			information->a_value = malloc(sizeof(char *) * 2);
+			if (information->a_value)
 			{
-				info->argv[0] = _strdup(info->arg);
-				info->argv[1] = NULL;
+				information->a_value[0] = _strdup(information->argument);
+				information->a_value[1] = NULL;
 			}
 		}
-		for (i = 0; info->argv && info->argv[i]; i++)
+		for (i = 0; information->a_value && information->a_value[i]; i++)
 			;
-		info->argc = i;
+		information->a_counter = i;
 
-		replace_alias(info);
-		replace_vars(info);
+		replace_alias(information);
+		replace_vars(information);
 	}
 }
 
 /**
- * free_info - frees info_t struct fields
- * @info: struct address
- * @all: true if freeing all fields
+ * free_shell_info - frees info_t struct fields
+ * @information: struct address
+ * @all_f: true if freeing all fields
  */
-void free_info(info_t *info, int all)
+void free_shell_info(PassInfo_t *information, int all_f)
 {
-	ffree(info->argv);
-	info->argv = NULL;
-	info->path = NULL;
-	if (all)
+	ffree(information->a_value);
+	information->a_value = NULL;
+	information->path = NULL;
+	if (all_f)
 	{
-		if (!info->cmd_buf)
-			free(info->arg);
-		if (info->env)
-			free_list(&(info->env));
-		if (info->history)
-			free_list(&(info->history));
-		if (info->alias)
-			free_list(&(info->alias));
-		ffree(info->environ);
-			info->environ = NULL;
-		bfree((void **)info->cmd_buf);
-		if (info->readfd > 2)
-			close(info->readfd);
+		if (!information->cmd_buffer)
+			free(information->argument);
+		if (information->environment_list)
+			free_list(&(information->environment_list));
+		if (information->hist)
+			free_list(&(information->hist));
+		if (information->alias_node)
+			free_list(&(information->alias_node));
+		ffree(information->environ);
+			information->environ = NULL;
+		bfree((void **)information->cmd_buffer);
+		if (information->read_file_descriptor > 2)
+			close(information->read_file_descriptor);
 		_putchar(BUF_FLUSH);
 	}
 }
-
 
