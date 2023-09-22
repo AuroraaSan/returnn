@@ -71,7 +71,7 @@ void check_chain_conditions(PassInfo_t *information,
 /**
  * replace_aliases - Replaces an alias in the tokenized string.
  * @information: The parameter structure.
-
+ *
  * Return: 1 if replaced, 0 otherwise
  */
 int replace_aliases(PassInfo_t *information)
@@ -141,7 +141,7 @@ int replace_variables(PassInfo_t *information)
 
 /**
  * string_replace - Replaces a string.
- * @old: Address of the old string.
+ * @oldy: Address of the old string.
  * @neww: New string.
  * Return: 1 if replaced, 0 otherwise
  */

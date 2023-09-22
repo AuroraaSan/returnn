@@ -17,7 +17,8 @@ char **string_to_word(char *s, char *delm)
 	if (!delm)
 		delm = " ";
 	for (i = 0; s[i] != '\0'; i++)
-		if (!is_char_delim(s[i], delm) && (is_char_delim(s[i + 1], delm) || !s[i + 1]))
+		if (!is_char_delim(s[i], delm) && (is_char_delim(s[i + 1],
+						delm) || !s[i + 1]))
 			num++;
 
 	if (num == 0)
