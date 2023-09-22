@@ -44,12 +44,12 @@ ssize_t input_buf(PassInfo_t *information, char **buff, size_t *len)
 }
 
 /**
- * get_input - gets a line minus the newline
+ * record_user_input - gets a line minus the newline
  * @information: parameter struct
  *
  * Return: bytes read
  */
-ssize_t get_input(PassInfo_t *information)
+ssize_t record_user_input(PassInfo_t *information)
 {
 	static char *buff;
 	static size_t x, y, lenn;
@@ -108,14 +108,14 @@ ssize_t read_buf(PassInfo_t *information, char *buffer, size_t *x)
 }
 
 /**
- * _getline - gets the next line of input from STDIN
+ * input_line_get - gets the next line of input from STDIN
  * @information: parameter struct
  * @p: address of pointer to buf
  * @len: size ptr
  *
  * Return: s
  */
-int _getline(PassInfo_t *information, char **p, size_t *len)
+int input_line_get(PassInfo_t *information, char **p, size_t *len)
 {
 	static char buffer[READ_BUF_SIZE];
 	static size_t x, lenn;
